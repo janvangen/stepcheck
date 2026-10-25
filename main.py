@@ -52,9 +52,27 @@ def _code_blocks(text: str) -> list[tuple[str, int, str]]:
     return blocks
 
 
-def _odd_quotes(code: str) -> bool:
-    """单引号个数为奇数，通常意味着引号没闭合。"""
-    return code.count("'") % 2 == 1
+def _unclosed_quote(code: str) -> str:
+    """返回未闭合的引号类型（"'" 或 '"'），没有则返回空串。
+
+    用状态机而不是简单计数：`awk '{print "x"}'` 里的双引号在单引号内部，
+    不算未闭合；`echo "it's"` 里的单引号在双引号内部，同样不算。
+    """
+    state = ""
+    escaped = False
+    for ch in code:
+        if escaped:
+            escaped = False
+            continue
+        if ch == "\\":
+            escaped = True
+            continue
+        if not state:
+            if ch in ("'", '"'):
+                state = ch
+        elif ch == state:
+            state = ""
+    return state
 
 
 def check_text(text: str, path: str = "<text>") -> list[Finding]:
@@ -72,8 +90,11 @@ def check_text(text: str, path: str = "<text>") -> list[Finding]:
                 if pattern.search(line):
                     findings.append(Finding(path, lineno, kind, line))
                     break
-        if _odd_quotes(code):
-            findings.append(Finding(path, start_line, "引号可能未闭合", lines[0] if lines else ""))
+        unclosed = _unclosed_quote(code)
+        if unclosed:
+            label = "双引号" if unclosed == '"' else "单引号"
+            findings.append(Finding(path, start_line, f"引号可能未闭合（{label}）",
+                                    lines[0] if lines else ""))
     return findings
 
 
@@ -111,7 +132,7 @@ python -c "print('hi"
 """
     assert check_text(good) == [], check_text(good)
     assert check_text(bad), "示例密钥应被识别"
-    assert any(f.kind == "引号可能未闭合" for f in check_text(problems)), "未闭合引号应被识别"
+    assert any("引号可能未闭合" in f.kind for f in check_text(problems)), "未闭合引号应被识别"
     assert check_text("```python\nprint(1)\n```") == [], "非 shell 代码块应跳过"
     print("self-test: ok")
     return 0
