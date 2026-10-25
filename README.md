@@ -42,7 +42,7 @@ python main.py --self-test
 
 ```
 docs/deploy.md:42: [未替换的模板变量] export TOKEN=${GITHUB_TOKEN}
-docs/deploy.md:51: [引号可能未闭合] curl -H "Authorization: $TOKEN
+docs/deploy.md:51: [引号可能未闭合（双引号）] curl -H "Authorization: $TOKEN
 检查了 12 个文件，发现 2 个问题。
 ```
 
@@ -64,10 +64,20 @@ Python、JSON 等其他语言块一律跳过——`${...}` 在很多语言里是
 
 - **不执行命令**。所以它能发现"占位符没填"，发现不了"命令本身写错了"。
 - **不解析 shell**。`if` / `for` / 函数体内的引号可能误报。
-- **误报存在**。比如 `awk '{print $1}'` 里单引号是成对的，不会报错；但跨行的字符串拼接可能被误判。
+- **误报存在**。引号检测用的是状态机：`awk '{print "x"}'` 里双引号在单引号内部，不算未闭合；
+  但跨行的字符串拼接、heredoc 里的引号仍可能被误判。
 - 密钥检测靠的是前缀模式，只覆盖 GitHub token 的常见格式。
 
 有误报就当噪音处理，先看它报的**行号**——那一行确实值得人看一眼。
+
+## 跑测试
+
+```bash
+python test_stepcheck.py
+```
+
+15 个用例，覆盖占位符、模板变量、TODO 标记、示例邮箱、示例密钥、未闭合引号、
+非 shell 代码块跳过、注释行跳过、行号定位等行为。
 
 ## 作为库使用
 
