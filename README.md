@@ -81,6 +81,15 @@ for f in findings:
 
 `check_text` 是纯函数，不碰文件系统，方便你塞进自己的检查流水线。
 
+---
+
+## 关于作者
+
+janvangen 写可复现的技术实践，做能直接用的开源小工具。这个工具只做一件事：把文档里跑不通的 shell 步骤挑出来。
+
+- 个人主页：<https://janvangen.github.io>
+- 仓库：<https://github.com/janvangen/stepcheck>
+
 ## 许可
 
 MIT，见 [LICENSE](LICENSE)。
