@@ -5,9 +5,9 @@
 占位符、忘记替换的变量、未闭合的引号、被注释掉的命令。
 
 用法:
-    python main.py README.md
-    python main.py docs/ --strict
-    python main.py --self-test
+    python stepcheck.py README.md
+    python stepcheck.py docs/ --strict
+    python stepcheck.py --self-test
 """
 
 from __future__ import annotations

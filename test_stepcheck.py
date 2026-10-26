@@ -7,13 +7,13 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from main import check_text, iter_files  # noqa: E402
+from stepcheck import check_text, iter_files  # noqa: E402
 
 
 DOC_OK = """# 标题
 
 ```bash
-python main.py README.md
+    python stepcheck.py README.md
 ```
 """
 

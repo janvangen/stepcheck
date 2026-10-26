@@ -11,6 +11,23 @@
 - 单文件，约 200 行，可以直接内嵌进你自己的 CI
 - 不联网，不上传任何内容，只读本地文件
 
+<!-- ipos:install -->
+## 安装
+
+零依赖，Python 3.10+ 即可：
+
+```bash
+pip install janvangen-stepcheck
+```
+
+装完直接用命令名调用：
+
+```bash
+stepcheck --help
+```
+
+也可以不用安装，直接把 `stepcheck.py` 拷走用——它只依赖标准库。
+
 ## 为什么还要做这个
 
 现成的 Markdown lint 工具（`markdownlint`、`remark`）主要管**格式**：标题层级、列表缩进、空行。
@@ -26,16 +43,23 @@
 
 ```bash
 # 检查单个文件
-python main.py README.md
+python stepcheck.py README.md
 
 # 检查整个目录下的所有 Markdown
-python main.py docs/
+python stepcheck.py docs/
 
 # 发现问题时用非零退出码，可以直接接进 CI
-python main.py docs/ --strict
+python stepcheck.py docs/ --strict
 
 # 跑内置自检，确认这份代码本身还活着
-python main.py --self-test
+python stepcheck.py --self-test
+```
+
+也可以直接 `pip install`（零依赖，可离线安装）：
+
+```bash
+pip install janvangen-stepcheck
+stepcheck README.md
 ```
 
 输出长这样：
